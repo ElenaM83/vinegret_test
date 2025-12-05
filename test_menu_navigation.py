@@ -50,7 +50,9 @@ def test_menu_navigation():
             href_before = item.get_attribute("href")
 
             old_url = driver.current_url
-            actions.move_to_element(item).pause(0.2).click().perform()
+
+            with allure.step(f"Кликаем по пункту меню: {link_text}"):
+                actions.move_to_element(item).pause(0.2).click().perform()
 
             WebDriverWait(driver, 10).until(EC.url_changes(old_url))
 
