@@ -1,4 +1,3 @@
-import time
 import allure
 import pytest
 from selenium import webdriver
@@ -30,11 +29,11 @@ def test_search_keyword(keyword):
     try:
         with allure.step("Открываем сайт Vinegret.cz"):
             driver.get(url="https://www.vinegret.cz/")
-            time.sleep(3)
+
 
         with allure.step("Принимаем cookies"):
             driver.find_element(By.CLASS_NAME, 'fc-button-label').click()
-            time.sleep(2)
+
 
         with allure.step(f"Выполняем поиск по ключевому слову: {keyword}"):
             search_input = driver.find_element(By.ID, 'search')
@@ -45,6 +44,9 @@ def test_search_keyword(keyword):
             WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.ID, "search-summary-total"))
             )
-            assert f'Поиск не выдал результатов по слову Прага'
+
+            assert keyword in driver.page_source, \
+                f"Поиск не выдал результатов по слову '{keyword}'"
+
     finally:
         driver.quit()

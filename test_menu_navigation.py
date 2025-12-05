@@ -1,6 +1,5 @@
-import time
+
 import allure
-import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
@@ -29,11 +28,11 @@ def test_menu_navigation():
     try:
         with allure.step("Открываем сайт Vinegret.cz"):
             driver.get(url="https://www.vinegret.cz/")
-            time.sleep(3)
+
 
         with allure.step("Принимаем cookies"):
             driver.find_element(By.CLASS_NAME, 'fc-button-label').click()
-            time.sleep(2)
+
 
         with allure.step("Находим все пункты меню в шапке сайта"):
             menu_items = driver.find_elements(By.CSS_SELECTOR, ".top-line a")
@@ -50,10 +49,13 @@ def test_menu_navigation():
             link_text = item.text.strip()
             href_before = item.get_attribute("href")
 
-            with allure.step(f"Кликаем по пункту меню: {link_text}"):
-                actions.move_to_element(item).pause(0.2).click().perform()
-                time.sleep(2)
+            old_url = driver.current_url
+            actions.move_to_element(item).pause(0.2).click().perform()
 
+            WebDriverWait(driver, 10).until(EC.url_changes(old_url))
+
+            assert driver.current_url != old_url, \
+                f"Переход по пункту меню '{link_text}' не выполнен"
 
     finally:
         driver.quit()
